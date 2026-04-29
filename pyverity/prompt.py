@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import inspect
 import re
-from typing import Any, Callable, Optional, get_type_hints
+from collections.abc import Callable
+from typing import Any, get_type_hints
 
 from .config import RuntimeConfig, default_config
 from .exceptions import (
@@ -85,11 +86,11 @@ class VerityPrompt:
         template: str,
         return_type: Any,
         effects: list,
-        model: Optional[str],
-        retry_spec: Optional[RetrySpec],
+        model: str | None,
+        retry_spec: RetrySpec | None,
         requires: list[str],
         ensures: list[str],
-        config: Optional[RuntimeConfig],
+        config: RuntimeConfig | None,
     ) -> None:
         self._fn = fn
         self._template = template
@@ -149,7 +150,7 @@ class VerityPrompt:
         )
         repair_hint = self._retry_spec.with_hint if self._retry_spec else ""
 
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
         for attempt in range(max_attempts):
             prompt_text = rendered
             if attempt > 0 and repair_hint:
