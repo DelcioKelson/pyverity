@@ -27,8 +27,7 @@ def _render(template: str, kwargs: dict[str, Any]) -> str:
         key = m.group(1)
         if key not in kwargs:
             raise KeyError(
-                f"Template variable '{{{{{key}}}}}' not provided. "
-                f"Available: {list(kwargs.keys())}"
+                f"Template variable '{{{{{key}}}}}' not provided. Available: {list(kwargs.keys())}"
             )
         return str(kwargs[key])
 
@@ -139,15 +138,11 @@ class VerityPrompt:
 
         # Resolve model: "provider/model" → strip provider prefix
         if self._model:
-            effective_model = (
-                self._model.split("/", 1)[1] if "/" in self._model else self._model
-            )
+            effective_model = self._model.split("/", 1)[1] if "/" in self._model else self._model
         else:
             effective_model = cfg.provider.model
 
-        max_attempts = (
-            self._retry_spec.max_attempts if self._retry_spec else cfg.default_retry
-        )
+        max_attempts = self._retry_spec.max_attempts if self._retry_spec else cfg.default_retry
         repair_hint = self._retry_spec.with_hint if self._retry_spec else ""
 
         last_error: Exception | None = None
@@ -179,13 +174,9 @@ class VerityPrompt:
             except Exception as exc:
                 last_error = exc
                 if cfg.debug:
-                    print(
-                        f"[verity] attempt {attempt + 1}/{max_attempts} failed: {exc}"
-                    )
+                    print(f"[verity] attempt {attempt + 1}/{max_attempts} failed: {exc}")
 
-        raise MaxRetriesExceeded(
-            f"All {max_attempts} attempt(s) failed. Last error: {last_error}"
-        )
+        raise MaxRetriesExceeded(f"All {max_attempts} attempt(s) failed. Last error: {last_error}")
 
     def __rshift__(self, other: Any) -> Pipeline:
         return Pipeline(self, other)

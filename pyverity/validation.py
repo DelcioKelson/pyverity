@@ -17,11 +17,11 @@ def _extract_json(text: str) -> str:
     if fence:
         return fence.group(1).strip()
 
-    for open_ch, close_ch in [('{', '}'), ('[', ']')]:
+    for open_ch, close_ch in [("{", "}"), ("[", "]")]:
         start = text.find(open_ch)
         end = text.rfind(close_ch)
         if start != -1 and end > start:
-            return text[start:end + 1]
+            return text[start : end + 1]
 
     return text
 
@@ -29,6 +29,7 @@ def _extract_json(text: str) -> str:
 # ---------------------------------------------------------------------------
 #  Type validation
 # ---------------------------------------------------------------------------
+
 
 def _is_literal_type(tp: Any) -> bool:
     return get_origin(tp) is Literal
@@ -65,9 +66,7 @@ def _validate(value: Any, tp: Any, path: str) -> list[str]:
         return []
 
     # dict / TypedDict
-    if tp is dict or origin is dict or (
-        isinstance(tp, type) and issubclass(tp, dict)
-    ):
+    if tp is dict or origin is dict or (isinstance(tp, type) and issubclass(tp, dict)):
         if not isinstance(value, dict):
             return [f"At '{path}': expected dict, got {type(value).__name__}"]
 
@@ -104,22 +103,28 @@ def _validate(value: Any, tp: Any, path: str) -> list[str]:
 
     # Primitive types
     if tp is str:
-        return [] if isinstance(value, str) else [
-            f"At '{path}': expected str, got {type(value).__name__}"
-        ]
+        return (
+            []
+            if isinstance(value, str)
+            else [f"At '{path}': expected str, got {type(value).__name__}"]
+        )
     if tp is int:
         # Accept int but not bool (bool is a subclass of int in Python)
         if isinstance(value, bool) or not isinstance(value, int):
             return [f"At '{path}': expected int, got {type(value).__name__}"]
         return []
     if tp is float:
-        return [] if isinstance(value, (int, float)) and not isinstance(value, bool) else [
-            f"At '{path}': expected float, got {type(value).__name__}"
-        ]
+        return (
+            []
+            if isinstance(value, (int, float)) and not isinstance(value, bool)
+            else [f"At '{path}': expected float, got {type(value).__name__}"]
+        )
     if tp is bool:
-        return [] if isinstance(value, bool) else [
-            f"At '{path}': expected bool, got {type(value).__name__}"
-        ]
+        return (
+            []
+            if isinstance(value, bool)
+            else [f"At '{path}': expected bool, got {type(value).__name__}"]
+        )
 
     return []
 
@@ -127,6 +132,7 @@ def _validate(value: Any, tp: Any, path: str) -> list[str]:
 # ---------------------------------------------------------------------------
 #  Public entry point
 # ---------------------------------------------------------------------------
+
 
 def validate_output(raw: str, return_type: Any) -> Any:
     """Parse and validate LLM *raw* output against a Python type annotation.
@@ -167,9 +173,7 @@ def validate_output(raw: str, return_type: Any) -> Any:
     try:
         value = json.loads(json_text)
     except json.JSONDecodeError as exc:
-        raise ParseError(
-            f"Could not parse LLM output as JSON: {text[:300]}"
-        ) from exc
+        raise ParseError(f"Could not parse LLM output as JSON: {text[:300]}") from exc
 
     errors = _validate(value, return_type, "")
     if errors:
