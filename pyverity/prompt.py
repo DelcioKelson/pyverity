@@ -23,7 +23,7 @@ _TEMPLATE_VAR = re.compile(r"\{\{(\w+)\}\}")
 def _render(template: str, kwargs: dict[str, Any]) -> str:
     """Substitute ``{{var}}`` placeholders in *template* with values from *kwargs*."""
 
-    def _sub(m: re.Match) -> str:
+    def _sub(m: re.Match[str]) -> str:
         key = m.group(1)
         if key not in kwargs:
             raise KeyError(
@@ -80,11 +80,11 @@ class VerityPrompt:
 
     def __init__(
         self,
-        fn: Callable,
+        fn: Callable[..., Any],
         *,
         template: str,
         return_type: Any,
-        effects: list,
+        effects: list[Any],
         model: str | None,
         retry_spec: RetrySpec | None,
         requires: list[str],
@@ -192,13 +192,13 @@ class VerityPrompt:
 
 def prompt(
     *,
-    effects: list | None = None,
+    effects: list[Any] | None = None,
     model: str | None = None,
     retry: RetrySpec | None = None,
     requires: list[str] | None = None,
     ensures: list[str] | None = None,
     config: RuntimeConfig | None = None,
-) -> Callable[[Callable], VerityPrompt]:
+) -> Callable[[Callable[..., Any]], VerityPrompt]:
     """Decorator that turns a Python function into a Verity prompt.
 
     The function body is unused at runtime — its **docstring** is the prompt
@@ -247,7 +247,7 @@ def prompt(
             '''
     """
 
-    def decorator(fn: Callable) -> VerityPrompt:
+    def decorator(fn: Callable[..., Any]) -> VerityPrompt:
         template = inspect.getdoc(fn) or ""
         hints = get_type_hints(fn)
         return_type = hints.get("return", Any)
