@@ -1,14 +1,18 @@
 # pyverity
 
-Python SDK for the [Verity](../README.md) LLM prompt DSL.
+[![CI](https://github.com/DelcioKelson/pyverity/actions/workflows/ci.yml/badge.svg)](https://github.com/DelcioKelson/pyverity/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/pyverity)](https://pypi.org/project/pyverity/)
+[![Python](https://img.shields.io/pypi/pyversions/pyverity)](https://pypi.org/project/pyverity/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Python SDK for the Verity LLM prompt DSL.
 
 Define, type-check, and run prompts against any OpenAI-compatible API using Python decorators and type hints — no `.vrt` files needed.
 
 ## Installation
 
 ```bash
-pip install httpx          # required dependency
-pip install -e .           # install pyverity from this folder
+pip install pyverity
 ```
 
 ## Quick start
